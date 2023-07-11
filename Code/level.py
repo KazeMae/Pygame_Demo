@@ -8,15 +8,21 @@
 
 import pygame
 from settings import *
+from player import Player
+
 
 class Level:
     def __init__(self):
-
         # 获取屏幕
         self.display_surface = pygame.display.get_surface()
 
         # 创建精灵组
         self.all_sprites = pygame.sprite.Group()
+
+        self.setup()
+
+    def setup(self):
+        self.player = Player((640, 360), self.all_sprites)
 
     def run(self, dt):
         # print("Hello Kitty!! ", dt)
@@ -25,4 +31,4 @@ class Level:
         # 绘制精灵于屏幕
         self.all_sprites.draw(self.display_surface)
         # 更新精灵
-        self.all_sprites.update()
+        self.all_sprites.update(dt)
