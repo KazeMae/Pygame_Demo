@@ -9,17 +9,23 @@
 
 import pygame
 from settings import *
+from support import *
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group)
 
+        # 导入动画
+        self.import_assets()
+        # 设置动画状态, 默认为闲置向下
+        self.status = 'down_idle'
+        # 动画数组索引
+        self.frame_index = 0
+
         # 一般设置
-        # 设置精灵宽为32, 高为64
-        self.image = pygame.Surface((32, 64))
-        # 填充颜色为 green
-        self.image.fill('green')
+        # 设置精灵为获取的动画列表, self.animations的容器类似于C++的map<string, vector<image> >
+        self.image = self.animations[self.status][self.frame_index]
         # 设置显示位置, 位置为从外面传入的 pos
         self.rect = self.image.get_rect(center=pos)
 
@@ -29,6 +35,21 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.center)
         # 玩家速度
         self.speed = 200
+
+    def import_assets(self):
+        """
+        导入资源
+        :return:
+        """
+        self.animations = {'up': [], 'down': [], 'left': [], 'right': [],  # 角色行走动画
+                           'right_idle': [], 'left_idle': [], 'up_idle': [], 'down_idle': [],  # 角色限制动画
+                           'right_hoe': [], 'left_hoe': [], 'up_hoe': [], 'down_hoe': [],  # 锄头动画
+                           'right_axe': [], 'left_axe': [], 'up_axe': [], 'down_axe': [],  # 斧头动画
+                           'right_water': [], 'left_water': [], 'up_water': [], 'down_water': []}  # 水动画
+
+        for animation in self.animations.keys():
+            full_path = '../graphics/character/' + animation
+            self.animations[animation] = import_folder(full_path)
 
     def input(self):
         # 监听用户操作
