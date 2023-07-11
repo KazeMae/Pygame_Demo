@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
 
         # 导入动画
+        self.animations = {str: []}
         self.import_assets()
         # 设置动画状态, 默认为闲置向下
         self.status = 'down_idle'
@@ -51,23 +52,43 @@ class Player(pygame.sprite.Sprite):
             full_path = '../graphics/character/' + animation
             self.animations[animation] = import_folder(full_path)
 
+    def animate(self, dt):
+        self.frame_index += 4 * dt
+        if self.frame_index >= len(self.animations[self.status]):
+            self.frame_index = 0
+        self.image = self.animations[self.status][int(self.frame_index)]
+
     def input(self):
         # 监听用户操作
         keys = pygame.key.get_pressed()
         # 方向移动 竖直
         if keys[pygame.K_UP]:
             self.direction.y = -1
+            self.status = 'up'
         elif keys[pygame.K_DOWN]:
             self.direction.y = 1
+            self.status = 'down'
         else:
             self.direction.y = 0
         # 方向移动 水平
         if keys[pygame.K_LEFT]:
             self.direction.x = -1
+            self.status = 'left'
         elif keys[pygame.K_RIGHT]:
             self.direction.x = 1
+            self.status = 'right'
         else:
             self.direction.x = 0
+
+    def get_status(self):
+        """
+        如果角色没有移动, 则将状态更新为对应方向的闲置状态
+        :return:
+        """
+        # 如果移动距离为0, 则更新为闲置状态
+        if self.direction.magnitude() == 0:
+            self.status = self.status.split('_')[0] + '_idle'
+        # TODO：如果使用工具
 
     def move(self, dt):
         # 向量归一化, 使两个向量相加为 1, 实现斜向移动, 零向量不可使用, 判断向量的模是否大于0
@@ -87,5 +108,9 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         # 获取玩家操作
         self.input()
+        # 更新玩家状态是否为闲置
+        self.get_status()
         # 改变玩家位置
         self.move(dt)
+        # 更新动画
+        self.animate(dt)
