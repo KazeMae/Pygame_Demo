@@ -25,7 +25,6 @@ class Level:
         self.player = Player((640, 360), self.all_sprites)
 
     def run(self, dt):
-        # print("Hello Kitty!! ", dt)
         # 填充屏幕
         self.display_surface.fill('blue')
         # 绘制精灵于屏幕
