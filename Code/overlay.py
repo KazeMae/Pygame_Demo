@@ -12,6 +12,9 @@ from settings import *
 
 
 class Overlay:
+    """
+    玩家界面的叠加层
+    """
     def __init__(self, player):
         # 基本设置
         self.display_surface = pygame.display.get_surface()
@@ -19,6 +22,7 @@ class Overlay:
 
         # 导入
         overlay_path = '../graphics/overlay/'
+        # 加载玩家工具和种子图标的图像
         self.tools_surface = {
             tool: pygame.image.load(f'{overlay_path}{tool}.png').convert_alpha() for tool in player.tools
         }

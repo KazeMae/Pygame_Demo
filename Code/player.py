@@ -30,6 +30,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animations[self.status][self.frame_index]
         # 设置显示位置, 位置为从外面传入的 pos
         self.rect = self.image.get_rect(center=pos)
+        # 设置玩家画面在第几层
+        self.z = LAYERS['main']
 
         # 移动属性
         self.direction = pygame.math.Vector2()
