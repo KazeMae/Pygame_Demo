@@ -38,15 +38,31 @@ class Player(pygame.sprite.Sprite):
         # 玩家速度
         self.speed = 200
 
+        # 玩家工具列表
+        self.tools = ['hoe', 'axe', 'water']
+        # 玩家工具索引
+        self.tool_index = 0
         # 玩家工具
-        self.selected_tool = 'axe'
+        self.selected_tool = self.tools[self.tool_index]
+
+        # 种子列表
+        self.seeds = ['corn', 'tomato']
+        # 种子索引
+        self.seed_index = 0
+        # 玩家手上的种子
+        self.selected_seed = self.seeds[self.seed_index]
+
         # 计时器
         self.timers = {
-            'tool use': Timer(350, self.use_tool())
+            'tool use': Timer(350, self.use_tool_or_seed()),
+            'tool switch': Timer(200),
+            'seed use': Timer(350, self.use_tool_or_seed()),
+            'seed switch': Timer(200),
         }
 
-    def use_tool(self):
-        print(self.selected_tool)
+    def use_tool_or_seed(self):
+        pass
+        # print(self.selected_tool)
 
     def import_assets(self):
         """
@@ -109,6 +125,35 @@ class Player(pygame.sprite.Sprite):
                 self.direction = pygame.math.Vector2()
                 # 使动画从头播放
                 self.frame_index = 0
+
+            # 切换工具, 并且切换工具没按下时候
+            if keys[pygame.K_q] and not self.timers['tool switch'].active:
+                # 激活切换工具计时器
+                self.timers['tool switch'].activate()
+                # 更新工具索引
+                self.tool_index = ((self.tool_index + 1) % len(self.tools))
+                # print(self.tool_index)
+                # 更新工具状态
+                self.selected_tool = self.tools[self.tool_index]
+
+                # 使用种子按键
+                if keys[pygame.K_LCTRL]:
+                    # 使用一个计时器
+                    self.timers['seed use'].activate()
+                    # 如果玩家使用种子, 则使玩家停下
+                    self.direction = pygame.math.Vector2()
+                    # 使动画从头播放
+                    self.frame_index = 0
+
+                # 切换种子, 并且切换种子没按下时候
+                if keys[pygame.K_e] and not self.timers['seed switch'].active:
+                    # 激活切换种子计时器
+                    self.timers['seed switch'].activate()
+                    # 更新种子索引
+                    self.seed_index = ((self.seed_index + 1) % len(self.seeds))
+                    # print(self.tool_index)
+                    # 更新种子状态
+                    self.selected_seed = self.seeds[self.seed_index]
 
     def get_status(self):
         """
