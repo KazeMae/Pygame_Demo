@@ -99,19 +99,19 @@ class Player(pygame.sprite.Sprite):
         # 如果玩家在使用工具, 则不允许移动
         if not self.timers['tool use'].active:
             # 方向移动 竖直
-            if keys[pygame.K_UP]:
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
                 self.direction.y = -1
                 self.status = 'up'
-            elif keys[pygame.K_DOWN]:
+            elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 self.direction.y = 1
                 self.status = 'down'
             else:
                 self.direction.y = 0
             # 方向移动 水平
-            if keys[pygame.K_LEFT]:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 self.direction.x = -1
                 self.status = 'left'
-            elif keys[pygame.K_RIGHT]:
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.direction.x = 1
                 self.status = 'right'
             else:
@@ -136,24 +136,24 @@ class Player(pygame.sprite.Sprite):
                 # 更新工具状态
                 self.selected_tool = self.tools[self.tool_index]
 
-                # 使用种子按键
-                if keys[pygame.K_LCTRL]:
-                    # 使用一个计时器
-                    self.timers['seed use'].activate()
-                    # 如果玩家使用种子, 则使玩家停下
-                    self.direction = pygame.math.Vector2()
-                    # 使动画从头播放
-                    self.frame_index = 0
+            # 使用种子按键
+            if keys[pygame.K_LCTRL]:
+                # 使用一个计时器
+                self.timers['seed use'].activate()
+                # 如果玩家使用种子, 则使玩家停下
+                self.direction = pygame.math.Vector2()
+                # 使动画从头播放
+                self.frame_index = 0
 
-                # 切换种子, 并且切换种子没按下时候
-                if keys[pygame.K_e] and not self.timers['seed switch'].active:
-                    # 激活切换种子计时器
-                    self.timers['seed switch'].activate()
-                    # 更新种子索引
-                    self.seed_index = ((self.seed_index + 1) % len(self.seeds))
-                    # print(self.tool_index)
-                    # 更新种子状态
-                    self.selected_seed = self.seeds[self.seed_index]
+            # 切换种子, 并且切换种子没按下时候
+            if keys[pygame.K_e] and not self.timers['seed switch'].active:
+                # 激活切换种子计时器
+                self.timers['seed switch'].activate()
+                # 更新种子索引
+                self.seed_index = ((self.seed_index + 1) % len(self.seeds))
+                # print(self.tool_index)
+                # 更新种子状态
+                self.selected_seed = self.seeds[self.seed_index]
 
     def get_status(self):
         """
