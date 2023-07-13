@@ -22,6 +22,8 @@ class Level:
 
         # 创建精灵组
         self.all_sprites = CameraGroup()
+        self.collision_sprites = pygame.sprite.Group()
+
         # 建立玩家和地图
         self.setup()
         #
@@ -44,23 +46,29 @@ class Level:
 
         # 栅栏
         for x, y, surface in tmx_data.get_layer_by_name('Fence').tiles():
-            Generic((x * TILE_SIZE, y * TILE_SIZE), surface, self.all_sprites, LAYERS['main'])
+            Generic((x * TILE_SIZE, y * TILE_SIZE), surface,  [self.all_sprites, self.collision_sprites])
 
         # 水
         water_frames = import_folder('../graphics/water')
         for x, y, surface in tmx_data.get_layer_by_name('Water').tiles():
             Water((x * TILE_SIZE, y * TILE_SIZE), water_frames, self.all_sprites)
 
-        # 野花
-        for object in tmx_data.get_layer_by_name('Decoration'):
-            WildFlower((object.x, object.y), object.image, self.all_sprites)
-
         # 树
-        for object in tmx_data.get_layer_by_name('Trees'):
-            Tree((object.x, object.y), object.image, self.all_sprites, object.name)
+        for objec in tmx_data.get_layer_by_name('Trees'):
+            Tree((objec.x, objec.y), objec.image, [self.all_sprites, self.collision_sprites], objec.name)
+
+        # 野花
+        for objec in tmx_data.get_layer_by_name('Decoration'):
+            WildFlower((objec.x, objec.y), objec.image, [self.all_sprites, self.collision_sprites])
+
+        # 空气墙
+        for x, y, surface in tmx_data.get_layer_by_name('Collision').tiles():
+            Generic((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), self.collision_sprites)
 
         # 载入玩家
-        self.player = Player((640, 360), self.all_sprites)
+        for objec in tmx_data.get_layer_by_name('Player'):
+            if objec.name == 'Start':
+                self.player = Player((objec.x, objec.y), self.all_sprites, self.collision_sprites)
         # 载入地图地板
         Generic(
             pos=(0, 0),

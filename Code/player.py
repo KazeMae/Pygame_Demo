@@ -14,7 +14,7 @@ from timer import Timer
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group):
+    def __init__(self, pos, group, collision_sprites):
         super().__init__(group)
 
         # 导入动画
@@ -24,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.status = 'down_idle'
         # 动画数组索引
         self.frame_index = 0
+        # 移动动画速度
+        self.frame_move_speed = 4
 
         # 一般设置
         # 设置精灵为获取的动画列表, self.animations的容器类似于C++的map<string, vector<image> >
@@ -32,6 +34,10 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         # 设置玩家画面在第几层
         self.z = LAYERS['main']
+
+        # 玩家碰撞箱, 复制 rect 然后缩小
+        self.hitbox = self.rect.copy().inflate((-126, -70))
+        self.collision_sprites = collision_sprites
 
         # 移动属性
         self.direction = pygame.math.Vector2()
@@ -87,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         :param dt: 时间增量
         :return:
         """
-        self.frame_index += 4 * dt
+        self.frame_index += self.frame_move_speed * dt
         if self.frame_index >= len(self.animations[self.status]):
             self.frame_index = 0
         self.image = self.animations[self.status][int(self.frame_index)]
@@ -118,6 +124,14 @@ class Player(pygame.sprite.Sprite):
                 self.status = 'right'
             else:
                 self.direction.x = 0
+
+            # 玩家疾跑
+            if keys[pygame.K_LSHIFT]:
+                self.speed = 400
+                self.frame_move_speed = 8
+            else:
+                self.speed = 200
+                self.frame_move_speed = 4
 
             # 使用工具按键
             if keys[pygame.K_SPACE]:
@@ -175,6 +189,31 @@ class Player(pygame.sprite.Sprite):
         for timer in self.timers.values():
             timer.update()
 
+    def collision(self, direction):
+        """
+
+        :param direction:
+        :return:
+        """
+        for sprite in self.collision_sprites.sprites():
+            if hasattr(sprite, 'hitbox'):
+                if sprite.hitbox.colliderect(self.hitbox):
+                    if direction == 'horizontal':
+                        if self.direction.x > 0:  # 向右移动
+                            self.hitbox.right = sprite.hitbox.left
+                        if self.direction.x < 0:  # 向左移动
+                            self.hitbox.left = sprite.hitbox.right
+                        self.rect.centerx = self.hitbox.centerx
+                        self.pos.x = self.hitbox.centerx
+
+                    if direction == 'vertical':
+                        if self.direction.y > 0:  # 向下移动
+                            self.hitbox.bottom = sprite.hitbox.top
+                        if self.direction.y < 0:  # 向上移动
+                            self.hitbox.top = sprite.hitbox.bottom
+                        self.rect.centery = self.hitbox.centery
+                        self.pos.y = self.hitbox.centery
+
     def move(self, dt):
         """
         移动玩家位置
@@ -185,15 +224,19 @@ class Player(pygame.sprite.Sprite):
         if self.direction.magnitude() > 0:
             self.direction = self.direction.normalize()
 
-        # 计算玩家移动后的位置 竖直
+        # 计算并改变玩家移动后的位置 竖直
         self.pos.y += self.direction.y * self.speed * dt
-        # 改变玩家位置 竖直
-        self.rect.centery = self.pos.y
+        self.hitbox.centery = round(self.pos.y)
+        self.rect.centery = self.hitbox.centery
+        self.collision('vertical')
 
-        # 计算玩家移动后的位置 水平
+        # 计算并改变玩家移动后的位置 水平
         self.pos.x += self.direction.x * self.speed * dt
-        # 改变玩家位置 水平
-        self.rect.centerx = self.pos.x
+        self.hitbox.centerx = round(self.pos.x)
+        self.rect.centerx = self.hitbox.centerx
+        self.collision('horizontal')
+
+        # print(self.rect.centerx, self.rect.centery)
 
     def update(self, dt):
         """

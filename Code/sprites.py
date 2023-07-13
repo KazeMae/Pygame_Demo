@@ -32,6 +32,8 @@ class Generic(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         # 精灵所在的图层
         self.z = z
+        # 碰撞箱, y轴缩小 75% 实现玩家可以站在物体后面的效果
+        self.hitbox = self.rect.copy().inflate( -self.rect.width * 0.2, -self.rect.height * 0.75)
 
 
 class Water(Generic):
@@ -75,6 +77,7 @@ class WildFlower(Generic):
     """
     def __init__(self, pos, surface, groups):
         super().__init__(pos, surface, groups)
+        self.hitbox = self.rect.copy().inflate(-20, -self.rect.height * 0.9)
 
 class Tree(Generic):
     """
