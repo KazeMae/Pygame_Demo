@@ -9,8 +9,8 @@
 
 import sys
 import pygame
-from settings import *
-from level import Level
+from game.settings import *
+from game.level import Level
 
 
 class Game:

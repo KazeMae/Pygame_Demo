@@ -7,13 +7,17 @@
 # @Email:           xiaochunfeng.x@foxmail.com
 
 import pygame
-from settings import *
-from player import Player
-from overlay import Overlay
-from camera_group import CameraGroup
-from sprites import Generic, Water, WildFlower, Tree
 from pytmx.util_pygame import load_pygame
-from support import import_folder
+from game.settings import *
+from actor.player import Player
+from actor.overlay import Overlay
+from actor.camera_group import CameraGroup
+from scene.generic import Generic
+from scene.tree import Tree
+from scene.water import Water
+from scene.wild_flower import WildFlower
+from scene.support import import_folder
+
 
 class Level:
     def __init__(self):
@@ -31,7 +35,7 @@ class Level:
 
     def setup(self):
         # 获取地图tmx文件
-        tmx_data = load_pygame('../data/map.tmx')
+        tmx_data = load_pygame('../resource/data/map.tmx')
 
         # 房子地板, 地板和地毯, 注意绘制顺序
         for layer in ['HouseFloor', 'HouseFurnitureBottom', ]:
@@ -46,10 +50,10 @@ class Level:
 
         # 栅栏
         for x, y, surface in tmx_data.get_layer_by_name('Fence').tiles():
-            Generic((x * TILE_SIZE, y * TILE_SIZE), surface,  [self.all_sprites, self.collision_sprites])
+            Generic((x * TILE_SIZE, y * TILE_SIZE), surface, [self.all_sprites, self.collision_sprites])
 
         # 水
-        water_frames = import_folder('../graphics/water')
+        water_frames = import_folder('../resource/graphics/water')
         for x, y, surface in tmx_data.get_layer_by_name('Water').tiles():
             Water((x * TILE_SIZE, y * TILE_SIZE), water_frames, self.all_sprites)
 
@@ -69,10 +73,11 @@ class Level:
         for objec in tmx_data.get_layer_by_name('Player'):
             if objec.name == 'Start':
                 self.player = Player((objec.x, objec.y), self.all_sprites, self.collision_sprites)
+
         # 载入地图地板
         Generic(
             pos=(0, 0),
-            surface=pygame.image.load('../graphics/world/ground.png').convert_alpha(),
+            surface=pygame.image.load('../resource/graphics/world/ground.png').convert_alpha(),
             groups=self.all_sprites,
             z=LAYERS['ground'],
         )

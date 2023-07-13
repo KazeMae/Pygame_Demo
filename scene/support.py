@@ -5,8 +5,6 @@
 # @Software:        PyCharm
 # @Author:          KazeMae
 # @Email:           xiaochunfeng.x@foxmail.com
-
-
 import pygame
 # walk(path) 返回这个文件夹包含的所有文件
 from os import walk

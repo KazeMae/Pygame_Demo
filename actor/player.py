@@ -1,16 +1,14 @@
 # @Time:            2023/7/11 20:04
 # @User:            风前絮
 # @Site:            cloudfall.top
-# @File:            player
+# @File:            actor
 # @Software:        PyCharm
 # @Author:          KazeMae
 # @Email:           xiaochunfeng.x@foxmail.com
-
-
 import pygame
-from settings import *
-from support import *
-from timer import Timer
+from game.settings import *
+from actor.timer import Timer
+from scene.support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
@@ -84,7 +82,7 @@ class Player(pygame.sprite.Sprite):
                            'right_water': [], 'left_water': [], 'up_water': [], 'down_water': []}  # 水动画
 
         for animation in self.animations.keys():
-            full_path = '../graphics/character/' + animation
+            full_path = '../resource/graphics/character/' + animation
             self.animations[animation] = import_folder(full_path)
 
     def animate(self, dt):

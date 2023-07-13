@@ -8,20 +8,21 @@
 
 
 import pygame
-from settings import *
+from game.settings import *
 
 
 class Overlay:
     """
     玩家界面的叠加层
     """
+
     def __init__(self, player):
         # 基本设置
         self.display_surface = pygame.display.get_surface()
         self.player = player
 
         # 导入
-        overlay_path = '../graphics/overlay/'
+        overlay_path = '../resource/graphics/overlay/'
         # 加载玩家工具和种子图标的图像
         self.tools_surface = {
             tool: pygame.image.load(f'{overlay_path}{tool}.png').convert_alpha() for tool in player.tools
@@ -33,7 +34,7 @@ class Overlay:
     def display(self):
         # 播放工具: 获取图片, 获取位置, 绘制图片于 self.display_surface
         tool_surface = self.tools_surface[self.player.selected_tool]
-        tool_rect = tool_surface.get_rect(midbottom = OVERLAY_POSITIONS['tool'])
+        tool_rect = tool_surface.get_rect(midbottom=OVERLAY_POSITIONS['tool'])
         self.display_surface.blit(tool_surface, tool_rect)
         # 播放种子: 同上
         seed_surface = self.seeds_surface[self.player.selected_seed]

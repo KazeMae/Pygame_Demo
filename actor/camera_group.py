@@ -7,8 +7,7 @@
 # @Email:           xiaochunfeng.x@foxmail.com
 
 import pygame
-from player import Player
-from settings import *
+from game.settings import *
 
 
 class CameraGroup(pygame.sprite.Group):
