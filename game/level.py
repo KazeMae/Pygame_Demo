@@ -24,13 +24,16 @@ class Level:
         # 获取屏幕
         self.display_surface = pygame.display.get_surface()
 
-        # 创建精灵组
+        # 创建精灵组[所有显示精灵, 碰撞精灵, 树精灵]
         self.all_sprites = CameraGroup()
         self.collision_sprites = pygame.sprite.Group()
+        self.tree_sprites = pygame.sprite.Group()
 
         # 建立玩家和地图
+        self.player = None
         self.setup()
-        #
+
+        # 建立叠加层
         self.overlay = Overlay(self.player)
 
     def setup(self):
@@ -59,7 +62,7 @@ class Level:
 
         # 树
         for objec in tmx_data.get_layer_by_name('Trees'):
-            Tree((objec.x, objec.y), objec.image, [self.all_sprites, self.collision_sprites], objec.name)
+            Tree((objec.x, objec.y), objec.image, [self.all_sprites, self.collision_sprites, self.tree_sprites], objec.name)
 
         # 野花
         for objec in tmx_data.get_layer_by_name('Decoration'):
@@ -69,10 +72,15 @@ class Level:
         for x, y, surface in tmx_data.get_layer_by_name('Collision').tiles():
             Generic((x * TILE_SIZE, y * TILE_SIZE), pygame.Surface((TILE_SIZE, TILE_SIZE)), self.collision_sprites)
 
-        # 载入玩家
+        # 玩家
         for objec in tmx_data.get_layer_by_name('Player'):
             if objec.name == 'Start':
-                self.player = Player((objec.x, objec.y), self.all_sprites, self.collision_sprites)
+                self.player = Player(
+                    pos=(objec.x, objec.y),
+                    group=self.all_sprites,
+                    collision_sprites=self.collision_sprites,
+                    tree_sprites=self.tree_sprites
+                )
 
         # 载入地图地板
         Generic(

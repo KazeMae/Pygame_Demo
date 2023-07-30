@@ -49,7 +49,7 @@ class Timer:
         current_time = pygame.time.get_ticks()
         # 如果执行的时间大于设定的持续时间, 则停止计时器
         if current_time - self.start_time >= self.duration:
-            self.deactivate()
             # 停止时执行函数
-            if self.func:
+            if self.func and self.start_time != 0:
                 self.func()
+            self.deactivate()

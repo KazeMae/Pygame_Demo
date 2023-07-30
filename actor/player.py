@@ -12,7 +12,7 @@ from scene.support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites):
+    def __init__(self, pos, group, collision_sprites, tree_sprites):
         super().__init__(group)
 
         # 导入动画
@@ -58,17 +58,43 @@ class Player(pygame.sprite.Sprite):
         # 玩家手上的种子
         self.selected_seed = self.seeds[self.seed_index]
 
+        # 互动
+        self.tree_sprites = tree_sprites
+
         # 计时器
         self.timers = {
-            'tool use': Timer(350, self.use_tool_or_seed()),
+            'tool use': Timer(350, self.use_tool_or_seed),
             'tool switch': Timer(200),
-            'seed use': Timer(350, self.use_tool_or_seed()),
+            'seed use': Timer(350, self.use_tool_or_seed),
             'seed switch': Timer(200),
         }
 
     def use_tool_or_seed(self):
-        pass
-        # print(self.selected_tool)
+        """
+        使用工具时
+        :return:
+        """
+        print('use tool')
+        if self.selected_tool == 'hoe':
+            pass
+
+        if self.selected_tool == 'axe':
+            for tree in self.tree_sprites.sprites():
+                # print(tree.rect.collidepoint(self.target_pos))
+                if tree.rect.collidepoint(self.target_pos):
+                    tree.damage()
+
+        if self.selected_tool == 'water':
+            pass
+        else:
+            pass
+
+    def get_target_pos(self):
+        """
+        获取工具作用位置
+        :return:
+        """
+        self.target_pos = self.rect.center + PLAYER_TOOL_OFFSET[self.status.split('_')[0]]
 
     def import_assets(self):
         """
@@ -248,6 +274,8 @@ class Player(pygame.sprite.Sprite):
         self.get_status()
         # 更新计时器
         self.update_timer()
+        # 获取工具作用位置
+        self.get_target_pos()
 
         # 改变玩家位置
         self.move(dt)
