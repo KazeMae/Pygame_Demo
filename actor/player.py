@@ -57,6 +57,10 @@ class Player(pygame.sprite.Sprite):
         self.seed_index = 0
         # 玩家手上的种子
         self.selected_seed = self.seeds[self.seed_index]
+        #
+        self.speeds = ['speed', 'unspeed']
+        self.speed_index = 1
+        self.selected_speed = self.speeds[self.speed_index]
 
         # 互动
         self.tree_sprites = tree_sprites
@@ -153,9 +157,13 @@ class Player(pygame.sprite.Sprite):
             if keys[pygame.K_LSHIFT]:
                 self.speed = 400
                 self.frame_move_speed = 8
+                self.speed_index = 0
+                self.selected_speed = self.speeds[self.speed_index]
             else:
                 self.speed = 200
                 self.frame_move_speed = 4
+                self.speed_index = 1
+                self.selected_speed = self.speeds[self.speed_index]
 
             # 使用工具按键
             if keys[pygame.K_SPACE]:
