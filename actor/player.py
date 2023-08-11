@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
         使用工具时
         :return:
         """
-        print('use tool')
+        # print('use tool')
         if self.selected_tool == 'hoe':
             pass
 
@@ -86,6 +86,7 @@ class Player(pygame.sprite.Sprite):
             for tree in self.tree_sprites.sprites():
                 # print(tree.rect.collidepoint(self.target_pos))
                 if tree.rect.collidepoint(self.target_pos):
+                    # TODO: 此处有bug，砍倒树显示白色画面的时候会崩溃，在此处打个断点调试后可修复
                     tree.damage()
 
         if self.selected_tool == 'water':

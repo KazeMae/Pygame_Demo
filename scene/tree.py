@@ -10,6 +10,7 @@ from random import randint, choice
 from game.settings import *
 from actor.timer import Timer
 from scene.generic import Generic
+from scene.particle import Particle
 
 
 class Tree(Generic):
@@ -27,7 +28,7 @@ class Tree(Generic):
         self.alive = True
         # 被砍掉的树的图片
         stump_path = f'../resource/graphics/stumps/{"small" if name == "Small" else "large"}.png'
-        self.stump_surface = pygame.image.load(stump_path).convert_alpha()
+        self. stump_surface = pygame.image.load(stump_path).convert_alpha()
         # 砍树所需时间(树健康值-1的时间）
         self.invul_timer = Timer(200)
 
@@ -47,6 +48,14 @@ class Tree(Generic):
         if len(self.apple_sprites.sprites()) > 0:
             # 去掉苹果精灵
             random_apple = choice(self.apple_sprites.sprites())
+            # 播放摘苹果动画
+            Particle(
+                pos=random_apple.rect.topleft,
+                surface=random_apple.image,
+                groups=self.groups()[0],
+                # TODO: 此处有bug，苹果不显示，将`LAYERS['fruit']`重新写一遍即可
+                z=LAYERS['fruit']
+            )
             random_apple.kill()
 
     def check_death(self):
@@ -56,6 +65,12 @@ class Tree(Generic):
         """
         # print(self.health)
         if self.health <= 0:
+            Particle(
+                pos=self.rect.topleft,
+                surface=self.image,
+                groups=self.groups()[0],
+                z=LAYERS['fruit']
+            )
             self.image = self.stump_surface
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
             self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.2)
@@ -74,7 +89,7 @@ class Tree(Generic):
                 # 将苹果从相对树的坐标转换到相对整个地图的坐标
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
-                Generic(
+                Particle(
                     pos=(x, y),
                     surface=self.apple_surface,
                     groups=[self.apple_sprites, self.groups()[0]],
