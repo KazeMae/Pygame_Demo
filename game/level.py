@@ -62,7 +62,13 @@ class Level:
 
         # 树
         for objec in tmx_data.get_layer_by_name('Trees'):
-            Tree((objec.x, objec.y), objec.image, [self.all_sprites, self.collision_sprites, self.tree_sprites], objec.name)
+            Tree(
+                pos=(objec.x, objec.y),
+                surface=objec.image,
+                groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
+                name=objec.name,
+                player_add=self.player_add,
+            )
 
         # 野花
         for objec in tmx_data.get_layer_by_name('Decoration'):
@@ -90,6 +96,14 @@ class Level:
             z=LAYERS['ground'],
         )
 
+    def player_add(self, item):
+        """
+        玩家物品增加
+        :param item:物品种类
+        :return:
+        """
+        self.player.item_inventory[item] += 1
+
     def run(self, dt):
         # 填充屏幕
         self.display_surface.fill('blue')
@@ -100,3 +114,5 @@ class Level:
         self.all_sprites.update(dt)
         # 绘制叠加层
         self.overlay.display()
+
+        print(self.player.item_inventory)

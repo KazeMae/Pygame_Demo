@@ -57,10 +57,18 @@ class Player(pygame.sprite.Sprite):
         self.seed_index = 0
         # 玩家手上的种子
         self.selected_seed = self.seeds[self.seed_index]
-        #
+        # 疾跑
         self.speeds = ['speed', 'unspeed']
         self.speed_index = 1
         self.selected_speed = self.speeds[self.speed_index]
+
+        # 库存
+        self.item_inventory = {
+            'wood':     0,
+            'apple':    0,
+            'corn':     0,
+            'tomato':   0,
+        }
 
         # 互动
         self.tree_sprites = tree_sprites
