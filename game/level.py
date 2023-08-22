@@ -9,6 +9,7 @@
 import pygame
 from pytmx.util_pygame import load_pygame
 from game.settings import *
+from game.transition import Transition
 from actor.player import Player
 from actor.overlay import Overlay
 from actor.camera_group import CameraGroup
@@ -17,6 +18,7 @@ from scene.tree import Tree
 from scene.water import Water
 from scene.wild_flower import WildFlower
 from scene.support import import_folder
+from scene.interaction import Interaction
 
 
 class Level:
@@ -24,10 +26,11 @@ class Level:
         # 获取屏幕
         self.display_surface = pygame.display.get_surface()
 
-        # 创建精灵组[所有显示精灵, 碰撞精灵, 树精灵]
+        # 创建精灵组[所有显示精灵, 碰撞精灵, 树精灵, 互动精灵]
         self.all_sprites = CameraGroup()
         self.collision_sprites = pygame.sprite.Group()
         self.tree_sprites = pygame.sprite.Group()
+        self.interaction_sprites = pygame.sprite.Group()
 
         # 建立玩家和地图
         self.player = None
@@ -35,6 +38,8 @@ class Level:
 
         # 建立叠加层
         self.overlay = Overlay(self.player)
+        # 过渡
+        self.transition = Transition(self.reset, self.player)
 
     def setup(self):
         # 获取地图tmx文件
@@ -85,9 +90,11 @@ class Level:
                     pos=(objec.x, objec.y),
                     group=self.all_sprites,
                     collision_sprites=self.collision_sprites,
-                    tree_sprites=self.tree_sprites
+                    tree_sprites=self.tree_sprites,
+                    interaction=self.interaction_sprites
                 )
-
+            if objec.name == 'Bed':
+                Interaction((objec.x, objec.y), (objec.width, objec.height), self.interaction_sprites, 'Bed')
         # 载入地图地板
         Generic(
             pos=(0, 0),
@@ -104,6 +111,20 @@ class Level:
         """
         self.player.item_inventory[item] += 1
 
+    def reset(self):
+        """
+        每日更新
+        :return:
+        """
+        # 苹果
+        # 遍历所有树
+        for tree in self.tree_sprites.sprites():
+            # 遍历树上的苹果
+            for apple in tree.apple_sprites.sprites():
+                apple.kill()
+            tree.create_fruit()
+
+
     def run(self, dt):
         # 填充屏幕
         self.display_surface.fill('blue')
@@ -115,4 +136,7 @@ class Level:
         # 绘制叠加层
         self.overlay.display()
 
-        print(self.player.item_inventory)
+        # 判断是否睡觉
+        if self.player.sleep:
+            self.transition.play()
+        # print(self.player.item_inventory)

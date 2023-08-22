@@ -12,7 +12,7 @@ from scene.support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites, tree_sprites):
+    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction):
         super().__init__(group)
 
         # 导入动画
@@ -26,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.frame_move_speed = 4
 
         # 一般设置
-        # 设置精灵为获取的动画列表, self.animations的容器类似于C++的map<string, vector<image> >
+        # 设置精灵为获取的动画列表, self.animations的容器类似于 C++ 的 map<string, vector<image> >
         self.image = self.animations[self.status][self.frame_index]
         # 设置显示位置, 位置为从外面传入的 pos
         self.rect = self.image.get_rect(center=pos)
@@ -72,6 +72,8 @@ class Player(pygame.sprite.Sprite):
 
         # 互动
         self.tree_sprites = tree_sprites
+        self.interaction = interaction
+        self.sleep = False
 
         # 计时器
         self.timers = {
@@ -141,8 +143,8 @@ class Player(pygame.sprite.Sprite):
         :return:
         """
         keys = pygame.key.get_pressed()
-        # 如果玩家在使用工具, 则不允许移动
-        if not self.timers['tool use'].active:
+        # 如果玩家在使用工具和睡觉时, 则不允许移动
+        if not self.timers['tool use'].active and not self.sleep:
             # 方向移动 竖直
             if keys[pygame.K_UP] or keys[pygame.K_w]:
                 self.direction.y = -1
@@ -211,6 +213,15 @@ class Player(pygame.sprite.Sprite):
                 # print(self.tool_index)
                 # 更新种子状态
                 self.selected_seed = self.seeds[self.seed_index]
+
+            if keys[pygame.K_RETURN]:
+                collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interaction, False)
+                if collided_interaction_sprite:
+                    if collided_interaction_sprite[0].name == 'Trader':
+                        pass
+                    else:
+                        self.status = 'left_idle'
+                        self.sleep = True
 
     def get_status(self):
         """
