@@ -19,6 +19,7 @@ from scene.water import Water
 from scene.wild_flower import WildFlower
 from scene.support import import_folder
 from scene.interaction import Interaction
+from scene.soil_layer import SoilLayer
 
 
 class Level:
@@ -34,6 +35,9 @@ class Level:
 
         # 建立玩家和地图
         self.player = None
+        # 土壤
+        self.soil_layer = SoilLayer(self.all_sprites)
+
         self.setup()
 
         # 建立叠加层
@@ -91,7 +95,8 @@ class Level:
                     group=self.all_sprites,
                     collision_sprites=self.collision_sprites,
                     tree_sprites=self.tree_sprites,
-                    interaction=self.interaction_sprites
+                    interaction=self.interaction_sprites,
+                    soil_layer=self.soil_layer
                 )
             if objec.name == 'Bed':
                 Interaction((objec.x, objec.y), (objec.width, objec.height), self.interaction_sprites, 'Bed')
@@ -123,7 +128,6 @@ class Level:
             for apple in tree.apple_sprites.sprites():
                 apple.kill()
             tree.create_fruit()
-
 
     def run(self, dt):
         # 填充屏幕

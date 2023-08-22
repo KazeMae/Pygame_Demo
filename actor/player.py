@@ -12,7 +12,7 @@ from scene.support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction):
+    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer):
         super().__init__(group)
 
         # 导入动画
@@ -75,6 +75,9 @@ class Player(pygame.sprite.Sprite):
         self.interaction = interaction
         self.sleep = False
 
+        # 泥土
+        self.soil_layer = soil_layer
+
         # 计时器
         self.timers = {
             'tool use': Timer(350, self.use_tool_or_seed),
@@ -90,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         """
         # print('use tool')
         if self.selected_tool == 'hoe':
-            pass
+            self.soil_layer.get_hit(self.target_pos)
 
         if self.selected_tool == 'axe':
             for tree in self.tree_sprites.sprites():
