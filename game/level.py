@@ -33,8 +33,6 @@ class Level:
         self.tree_sprites = pygame.sprite.Group()
         self.interaction_sprites = pygame.sprite.Group()
 
-        # 建立玩家和地图
-        self.player = None
         # 土壤
         self.soil_layer = SoilLayer(self.all_sprites)
 
@@ -49,7 +47,7 @@ class Level:
         # 获取地图tmx文件
         tmx_data = load_pygame('../resource/data/map.tmx')
 
-        # 房子地板, 地板和地毯, 注意绘制顺序
+        # 房子地板, 和地毯, 注意绘制顺序
         for layer in ['HouseFloor', 'HouseFurnitureBottom', ]:
             for x, y, surface in tmx_data.get_layer_by_name(layer).tiles():
                 Generic((x * TILE_SIZE, y * TILE_SIZE), surface, self.all_sprites, LAYERS['house bottom'])
@@ -76,7 +74,7 @@ class Level:
                 surface=objec.image,
                 groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
                 name=objec.name,
-                player_add=self.player_add,
+                player_add=self.player_add
             )
 
         # 野花
@@ -105,7 +103,7 @@ class Level:
             pos=(0, 0),
             surface=pygame.image.load('../resource/graphics/world/ground.png').convert_alpha(),
             groups=self.all_sprites,
-            z=LAYERS['ground'],
+            z=LAYERS['ground']
         )
 
     def player_add(self, item):
@@ -125,9 +123,10 @@ class Level:
         # 遍历所有树
         for tree in self.tree_sprites.sprites():
             # 遍历树上的苹果
-            for apple in tree.apple_sprites.sprites():
-                apple.kill()
-            tree.create_fruit()
+            if len(tree.apple_sprites.sprites()) > 0:
+                for apple in tree.apple_sprites.sprites():
+                    apple.kill()
+                tree.create_fruit()
 
     def run(self, dt):
         # 填充屏幕
@@ -143,4 +142,3 @@ class Level:
         # 判断是否睡觉
         if self.player.sleep:
             self.transition.play()
-        # print(self.player.item_inventory)

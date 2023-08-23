@@ -97,7 +97,6 @@ class Player(pygame.sprite.Sprite):
 
         if self.selected_tool == 'axe':
             for tree in self.tree_sprites.sprites():
-                # print(tree.rect.collidepoint(self.target_pos))
                 if tree.rect.collidepoint(self.target_pos):
                     # TODO: 此处有bug，砍倒树显示白色画面的时候会崩溃，在此处打个断点调试后可修复
                     tree.damage()

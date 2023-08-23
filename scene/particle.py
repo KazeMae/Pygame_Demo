@@ -22,7 +22,7 @@ class Particle(Generic):
         :param groups: 精灵组
         :param z: 精灵所在的图层
         """
-        super().__init__(pos, surface, groups)
+        super().__init__(pos, surface, groups, z)
         # 获取开始时间
         self.start_time = pygame.time.get_ticks()
         self.duration = duration

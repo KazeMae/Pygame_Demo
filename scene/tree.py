@@ -71,11 +71,12 @@ class Tree(Generic):
                 pos=self.rect.topleft,
                 surface=self.image,
                 groups=self.groups()[0],
-                z=LAYERS['fruit']
+                z=LAYERS['fruit'],
+                duration=300
             )
             self.image = self.stump_surface
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
-            self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.2)
+            self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.1 )
             self.alive = False
             self.player_add('wood')
 
@@ -86,9 +87,7 @@ class Tree(Generic):
     def create_fruit(self):
         for pos in self.apple_pos:
             # 随机生成苹果
-            r = randint(0, 10)
-            if r < 2:
-                # print(r)
+            if randint(0, 10) < 2:
                 # 将苹果从相对树的坐标转换到相对整个地图的坐标
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
@@ -96,6 +95,5 @@ class Tree(Generic):
                     pos=(x, y),
                     surface=self.apple_surface,
                     groups=[self.apple_sprites, self.groups()[0]],
-                    # TODO: 此处有bug，苹果不显示，将`LAYERS['fruit']`重新写一遍即可
-                    z=9
+                    z=LAYERS['fruit']
                 )
