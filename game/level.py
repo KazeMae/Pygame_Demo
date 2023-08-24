@@ -119,6 +119,9 @@ class Level:
         每日更新
         :return:
         """
+        # 土地浇水重置
+        self.soil_layer.remove_water()
+
         # 苹果
         # 遍历所有树
         for tree in self.tree_sprites.sprites():

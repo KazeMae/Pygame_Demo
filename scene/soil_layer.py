@@ -6,10 +6,12 @@
 # @Author:          KazeMae
 # @Email:           xiaochunfeng.x@foxmail.com
 import pygame
+from random import choice
 from pytmx.util_pygame import load_pygame
 from game.settings import *
 from scene.soil_tile import SoilTile
 from scene.support import *
+from scene.water_tile import WaterTile
 
 
 class SoilLayer:
@@ -17,10 +19,11 @@ class SoilLayer:
         # 精灵组
         self.all_sprites = all_sprites
         self.soil_sprites = pygame.sprite.Group()
+        self.water_sprites = pygame.sprite.Group()
 
         # 图形
-        self.soil_surface = pygame.image.load('../resource/graphics/soil/o.png')
         self.soil_surfaces = import_folder_dict('../resource/graphics/soil/')
+        self.water_surfaces = import_folder('../resource/graphics/soil_water')
 
         self.create_soil_grid()
         self.create_hit_rects()
@@ -70,6 +73,28 @@ class SoilLayer:
                     # 标记已开垦
                     self.grid[y][x].append('X')
                     self.create_soil_tiles()
+
+    def water(self, target_pos):
+        for soil_sprite in self.soil_sprites.sprites():
+            if soil_sprite.rect.collidepoint(target_pos):
+                x = soil_sprite.rect.x // TILE_SIZE
+                y = soil_sprite.rect.y // TILE_SIZE
+                self.grid[y][x].append('W')
+
+                pos = soil_sprite.rect.topleft
+                surface = choice(self.water_surfaces)
+                WaterTile(pos, surface, [self.all_sprites, self.water_sprites])
+
+    def remove_water(self):
+        # 销毁所有的水精灵
+        for sprite in self.water_sprites.sprites():
+            sprite.kill()
+
+        # 清理所有的耕地
+        for row in self.grid:
+            for cell in row:
+                if 'W' in cell:
+                    cell.remove('W')
 
     def create_soil_tiles(self):
         self.soil_sprites.empty()
