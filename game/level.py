@@ -36,7 +36,7 @@ class Level:
         self.interaction_sprites = pygame.sprite.Group()
 
         # 土壤
-        self.soil_layer = SoilLayer(self.all_sprites)
+        self.soil_layer = SoilLayer(self.all_sprites, self.collision_sprites)
 
         self.setup()
 
@@ -126,6 +126,9 @@ class Level:
         每日更新
         :return:
         """
+        # 植物
+        self.soil_layer.update_plants()
+
         # 土地浇水重置
         self.soil_layer.remove_water()
         # 随机降雨

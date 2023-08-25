@@ -80,13 +80,13 @@ class Player(pygame.sprite.Sprite):
 
         # 计时器
         self.timers = {
-            'tool use': Timer(350, self.use_tool_or_seed),
+            'tool use': Timer(350, self.use_tool),
             'tool switch': Timer(200),
-            'seed use': Timer(350, self.use_tool_or_seed),
+            'seed use': Timer(350, self.use_seed),
             'seed switch': Timer(200),
         }
 
-    def use_tool_or_seed(self):
+    def use_tool(self):
         """
         使用工具时
         :return:
@@ -105,6 +105,9 @@ class Player(pygame.sprite.Sprite):
             self.soil_layer.water(self.target_pos)
         else:
             pass
+
+    def use_seed(self):
+        self.soil_layer.plant_seed(self.target_pos, self.selected_seed)
 
     def get_target_pos(self):
         """

@@ -9,17 +9,20 @@ import pygame
 from random import choice
 from pytmx.util_pygame import load_pygame
 from game.settings import *
+from scene.plant import Plant
 from scene.soil_tile import SoilTile
 from scene.support import *
 from scene.water_tile import WaterTile
 from scene.rain import Rain
 
 class SoilLayer:
-    def __init__(self, all_sprites):
+    def __init__(self, all_sprites, collision_sprites):
         # 精灵组
         self.all_sprites = all_sprites
+        self.collision_sprites = collision_sprites
         self.soil_sprites = pygame.sprite.Group()
         self.water_sprites = pygame.sprite.Group()
+        self.plant_sprites = pygame.sprite.Group()
 
         # 图形
         self.soil_surfaces = import_folder_dict('../resource/graphics/soil/')
@@ -107,6 +110,27 @@ class SoilLayer:
             for cell in row:
                 if 'W' in cell:
                     cell.remove('W')
+
+    def check_watered(self, pos):
+        x = pos[0] // TILE_SIZE
+        y = pos[1] // TILE_SIZE
+        cell = self.grid[y][x]
+        return 'W' in cell
+
+    def plant_seed(self, target_pos, seed):
+        for soil_sprite in self.soil_sprites.sprites():
+            # 检测是否包含 target_pos
+            if soil_sprite.rect.collidepoint(target_pos):
+                x = soil_sprite.rect.x // TILE_SIZE
+                y = soil_sprite.rect.y // TILE_SIZE
+                # 标记种植
+                if 'P' not in self.grid[y][x]:
+                    self.grid[y][x].append('P')
+                    Plant(seed, [self.all_sprites, self.plant_sprites, self.collision_sprites], soil_sprite, self.check_watered)
+
+    def update_plants(self):
+        for plant in self.plant_sprites.sprites():
+            plant.grow()
 
     def create_soil_tiles(self):
         self.soil_sprites.empty()
