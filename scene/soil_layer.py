@@ -12,7 +12,7 @@ from game.settings import *
 from scene.soil_tile import SoilTile
 from scene.support import *
 from scene.water_tile import WaterTile
-
+from scene.rain import Rain
 
 class SoilLayer:
     def __init__(self, all_sprites):
@@ -73,6 +73,8 @@ class SoilLayer:
                     # 标记已开垦
                     self.grid[y][x].append('X')
                     self.create_soil_tiles()
+                    if self.raining:
+                        self.watet_all()
 
     def water(self, target_pos):
         for soil_sprite in self.soil_sprites.sprites():
@@ -84,6 +86,16 @@ class SoilLayer:
                 pos = soil_sprite.rect.topleft
                 surface = choice(self.water_surfaces)
                 WaterTile(pos, surface, [self.all_sprites, self.water_sprites])
+
+    def watet_all(self):
+        # 枚举每个区块
+        for index_row, row in enumerate(self.grid):
+            for index_col, cell in enumerate(row):
+                if 'X' in cell and 'W' not in cell:
+                    cell.append('W')
+                    x = index_col * TILE_SIZE
+                    y = index_row * TILE_SIZE
+                    WaterTile((x, y), choice(self.water_surfaces), [self.all_sprites, self.water_sprites])
 
     def remove_water(self):
         # 销毁所有的水精灵

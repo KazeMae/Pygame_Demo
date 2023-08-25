@@ -7,6 +7,7 @@
 # @Email:           xiaochunfeng.x@foxmail.com
 
 import pygame
+from random import randint
 from pytmx.util_pygame import load_pygame
 from game.settings import *
 from game.transition import Transition
@@ -20,6 +21,7 @@ from scene.wild_flower import WildFlower
 from scene.support import import_folder
 from scene.interaction import Interaction
 from scene.soil_layer import SoilLayer
+from scene.rain import Rain
 
 
 class Level:
@@ -42,6 +44,11 @@ class Level:
         self.overlay = Overlay(self.player)
         # 过渡
         self.transition = Transition(self.reset, self.player)
+
+        # 天空
+        self.rain = Rain(self.all_sprites)
+        self.raining = randint(0, 10) < 3  # 概率30%
+        self.soil_layer.raining = self.raining
 
     def setup(self):
         # 获取地图tmx文件
@@ -72,7 +79,7 @@ class Level:
             Tree(
                 pos=(objec.x, objec.y),
                 surface=objec.image,
-                groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
+                groups=[self.tree_sprites, self.all_sprites, self.collision_sprites],
                 name=objec.name,
                 player_add=self.player_add
             )
@@ -121,7 +128,11 @@ class Level:
         """
         # 土地浇水重置
         self.soil_layer.remove_water()
-
+        # 随机降雨
+        self.raining = randint(0, 10) < 3  # 概率30%
+        self.soil_layer.raining = self.raining
+        if self.raining:
+            self.soil_layer.watet_all()
         # 苹果
         # 遍历所有树
         for tree in self.tree_sprites.sprites():
@@ -141,6 +152,10 @@ class Level:
         self.all_sprites.update(dt)
         # 绘制叠加层
         self.overlay.display()
+
+        # 下雨
+        if self.raining:
+            self.rain.updata()
 
         # 判断是否睡觉
         if self.player.sleep:

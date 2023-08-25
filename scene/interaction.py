@@ -10,6 +10,9 @@ from scene.generic import Generic
 
 
 class Interaction(Generic):
+    """
+    白色闪烁
+    """
     def __init__(self, pos, size, groups, name):
         surface = pygame.Surface(size)
         super().__init__(pos, surface, groups)
