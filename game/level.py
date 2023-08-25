@@ -22,6 +22,7 @@ from scene.support import import_folder
 from scene.interaction import Interaction
 from scene.soil_layer import SoilLayer
 from scene.rain import Rain
+from scene.particle import Particle
 
 
 class Level:
@@ -145,6 +146,15 @@ class Level:
                     apple.kill()
                 tree.create_fruit()
 
+    def plant_collision(self):
+        if self.soil_layer.plant_sprites:
+            for plant in self.soil_layer.plant_sprites.sprites():
+                if plant.harvestable and plant.rect.colliderect(self.player.hitbox):
+                    self.player_add(plant.plant_type)
+                    plant.kill()
+                    Particle(plant.rect.topleft, plant.image, self.all_sprites, LAYERS['main'])
+                    self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
+
     def run(self, dt):
         # 填充屏幕
         self.display_surface.fill('blue')
@@ -153,6 +163,8 @@ class Level:
         self.all_sprites.custom_draw(self.player)
         # 更新精灵
         self.all_sprites.update(dt)
+        # 收获植物
+        self.plant_collision()
         # 绘制叠加层
         self.overlay.display()
 
@@ -163,3 +175,5 @@ class Level:
         # 判断是否睡觉
         if self.player.sleep:
             self.transition.play()
+
+        print(self.player.item_inventory)
