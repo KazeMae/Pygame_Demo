@@ -15,6 +15,7 @@ from scene.support import *
 from scene.water_tile import WaterTile
 from scene.rain import Rain
 
+
 class SoilLayer:
     def __init__(self, all_sprites, collision_sprites):
         # 精灵组
@@ -126,7 +127,8 @@ class SoilLayer:
                 # 标记种植
                 if 'P' not in self.grid[y][x]:
                     self.grid[y][x].append('P')
-                    Plant(seed, [self.all_sprites, self.plant_sprites, self.collision_sprites], soil_sprite, self.check_watered)
+                    Plant(seed, [self.all_sprites, self.plant_sprites, self.collision_sprites], soil_sprite,
+                          self.check_watered)
 
     def update_plants(self):
         for plant in self.plant_sprites.sprites():

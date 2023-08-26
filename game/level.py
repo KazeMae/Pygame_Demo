@@ -23,6 +23,7 @@ from scene.interaction import Interaction
 from scene.soil_layer import SoilLayer
 from scene.rain import Rain
 from scene.particle import Particle
+from scene.sky import Sky
 
 
 class Level:
@@ -50,6 +51,7 @@ class Level:
         self.rain = Rain(self.all_sprites)
         self.raining = randint(0, 10) < 3  # 概率30%
         self.soil_layer.raining = self.raining
+        self.sky = Sky()
 
     def setup(self):
         # 获取地图tmx文件
@@ -80,7 +82,7 @@ class Level:
             Tree(
                 pos=(objec.x, objec.y),
                 surface=objec.image,
-                groups=[self.tree_sprites, self.all_sprites, self.collision_sprites],
+                groups=[self.tree_sprites, self.collision_sprites, self.all_sprites],
                 name=objec.name,
                 player_add=self.player_add
             )
@@ -146,6 +148,10 @@ class Level:
                     apple.kill()
                 tree.create_fruit()
 
+        # 时间
+        self.sky.start_color = [255, 255, 255]
+        self.sky.light = True
+
     def plant_collision(self):
         if self.soil_layer.plant_sprites:
             for plant in self.soil_layer.plant_sprites.sprites():
@@ -171,6 +177,9 @@ class Level:
         # 下雨
         if self.raining:
             self.rain.updata()
+
+        # 时间流逝
+        self.sky.display(dt)
 
         # 判断是否睡觉
         if self.player.sleep:
