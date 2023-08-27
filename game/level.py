@@ -14,6 +14,7 @@ from game.transition import Transition
 from actor.player import Player
 from actor.overlay import Overlay
 from actor.camera_group import CameraGroup
+from actor.shopmenu import ShopMenu
 from scene.generic import Generic
 from scene.tree import Tree
 from scene.water import Water
@@ -52,6 +53,11 @@ class Level:
         self.raining = randint(0, 10) < 3  # 概率30%
         self.soil_layer.raining = self.raining
         self.sky = Sky()
+
+        # 商店
+        self.menu = ShopMenu(self.player, self.toggle_shop)
+        # 商店状态
+        self.shop_active = False
 
     def setup(self):
         # 获取地图tmx文件
@@ -104,10 +110,16 @@ class Level:
                     collision_sprites=self.collision_sprites,
                     tree_sprites=self.tree_sprites,
                     interaction=self.interaction_sprites,
-                    soil_layer=self.soil_layer
+                    soil_layer=self.soil_layer,
+                    toggle_shop = self.toggle_shop
                 )
+
             if objec.name == 'Bed':
                 Interaction((objec.x, objec.y), (objec.width, objec.height), self.interaction_sprites, 'Bed')
+
+            if objec.name == 'Trader':
+                Interaction((objec.x, objec.y), (objec.width, objec.height), self.interaction_sprites, 'Trader')
+
         # 载入地图地板
         Generic(
             pos=(0, 0),
@@ -123,6 +135,11 @@ class Level:
         :return:
         """
         self.player.item_inventory[item] += 1
+
+    def toggle_shop(self):
+        # 标记商店开启或关闭
+        self.shop_active = not self.shop_active
+
 
     def reset(self):
         """
@@ -164,20 +181,23 @@ class Level:
     def run(self, dt):
         # 填充屏幕
         self.display_surface.fill('blue')
-        # 绘制精灵于屏幕
-        # self.all_sprites.draw(self.display_surface)
+        # 以玩家为中心绘制精灵
         self.all_sprites.custom_draw(self.player)
-        # 更新精灵
-        self.all_sprites.update(dt)
-        # 收获植物
-        self.plant_collision()
+
+        # 根据是否打开商店来绘制精灵
+        if self.shop_active:
+            self.menu.update()
+        else:
+            # 更新精灵
+            self.all_sprites.update(dt)
+            # 收获植物
+            self.plant_collision()
+
         # 绘制叠加层
         self.overlay.display()
-
         # 下雨
-        if self.raining:
+        if self.raining and not self.shop_active:
             self.rain.updata()
-
         # 时间流逝
         self.sky.display(dt)
 
@@ -185,4 +205,4 @@ class Level:
         if self.player.sleep:
             self.transition.play()
 
-        print(self.player.item_inventory)
+        print(self.player.item_inventory, self.shop_active)
