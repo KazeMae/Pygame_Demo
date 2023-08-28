@@ -16,7 +16,7 @@ class ShopMenu:
         self.player = player
         self.toggle_menu = toggle_menu
         self.display_surface = pygame.display.get_surface()
-        self.font = pygame.font.Font('../resource/font/LycheeSoda.ttf', 30)
+        self.font = pygame.font.Font('../resource/font/DinkieBitmap-9pxDemo.ttf', 30)
 
         # 页面设置
         self.width = 400
@@ -45,7 +45,8 @@ class ShopMenu:
 
     def setup(self):
         for item in self.options:
-            text_surface = self.font.render(item, False, 'Black')
+            cn_item = EN_TO_CN[item]
+            text_surface = self.font.render(cn_item, False, 'Black')
             self.text_surfaces.append(text_surface)
             self.total_height += text_surface.get_height() + (self.padding * 2)
 
@@ -95,6 +96,7 @@ class ShopMenu:
             top = self.main_rect.top + text_index * (text_surface.get_height() + (self.padding * 2) + self.space)
             amount_list = list(self.player.item_inventory.values()) + list(self.player.seed_inventory.values())
             amount = amount_list[text_index]
+            print(text_surface)
             self.show_entry(text_surface, amount, top, self.index == text_index)
 
             # self.display_surface.blit(text_surface, (100, text_index * 50))

@@ -61,3 +61,9 @@ PURCHASE_PRICES = {
     'corn': 4,
     'tomato': 5
 }
+EN_TO_CN = {
+    'wood': '木头',
+    'apple': '苹果',
+    'corn': '玉米',
+    'tomato': '番茄'
+}
