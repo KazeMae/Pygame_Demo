@@ -32,6 +32,13 @@ class SoilLayer:
         self.create_soil_grid()
         self.create_hit_rects()
 
+        # 声音
+        self.hoe_sound = pygame.mixer.Sound('../resource/audio/hoe.wav')
+        self.hoe_sound.set_volume(0.1)
+
+        self.plant_sound = pygame.mixer.Sound('../resource/audio/plant.wav')
+        self.plant_sound.set_volume(0.1)
+
     def create_soil_grid(self):
         """
         创建泥土格子
@@ -70,6 +77,8 @@ class SoilLayer:
         """
         for rect in self.hit_rects:
             if rect.collidepoint(point):
+                self.hoe_sound.play()
+
                 x = rect.x // TILE_SIZE
                 y = rect.y // TILE_SIZE
 
@@ -122,6 +131,8 @@ class SoilLayer:
         for soil_sprite in self.soil_sprites.sprites():
             # 检测是否包含 target_pos
             if soil_sprite.rect.collidepoint(target_pos):
+                self.plant_sound.play()
+
                 x = soil_sprite.rect.x // TILE_SIZE
                 y = soil_sprite.rect.y // TILE_SIZE
                 # 标记种植

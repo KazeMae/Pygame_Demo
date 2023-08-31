@@ -37,7 +37,7 @@ class ShopMenu:
         self.timer = Timer(200)
 
     def display_money(self):
-        text_surface = self.font.render(f'{self.player.money}', False, 'Black')
+        text_surface = self.font.render('钱 ' + f'{self.player.money}', False, 'Black')
         text_rect = text_surface.get_rect(midbottom=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 20))
 
         pygame.draw.rect(self.display_surface, 'White', text_rect.inflate(10, 10), 0, 6)
@@ -85,17 +85,15 @@ class ShopMenu:
                     self.player.seed_inventory[current_item] += 1
                     self.player.money -= PURCHASE_PRICES[current_item]
 
-
     def show_entry(self, text_surface, amount, top, selected):
         # 背景
-        background_rect = pygame.Rect(self.main_rect.left, top, self.width,
-                                      text_surface.get_height() + (self.padding * 2))
+        background_rect = pygame.Rect(self.main_rect.left, top, self.width, text_surface.get_height() + (self.padding * 2))
         pygame.draw.rect(self.display_surface, 'White', background_rect, 0, 4)
         # 文本
         text_rect = text_surface.get_rect(midleft=(self.main_rect.left + 20, background_rect.centery))
         self.display_surface.blit(text_surface, text_rect)
         # 金额
-        amount_surface = self.font.render(str(amount), False, 'Black')
+        amount_surface = self.font.render('库存' + str(amount), False, 'Black')
         amount_rect = amount_surface.get_rect(midright=(self.main_rect.right - 20, background_rect.centery))
         self.display_surface.blit(amount_surface, amount_rect)
 
@@ -104,11 +102,11 @@ class ShopMenu:
             pygame.draw.rect(self.display_surface, 'black', background_rect, 4, 4)
             # 渲染出售和收购的字体
             if self.index <= self.sell_border:
-                self.sell_text = self.font.render('收购' + f'${SALE_PRICES[self.options[self.index]]}' + '  库存', False, 'Black')
+                self.sell_text = self.font.render('收购' + f'${SALE_PRICES[self.options[self.index]]}', False, 'Black')
                 pos_rect = self.sell_text.get_rect(midleft=(self.main_rect.left + 150, background_rect.centery))
                 self.display_surface.blit(self.sell_text, pos_rect)
             else:
-                self.buy_text = self.font.render('出售' + f'${PURCHASE_PRICES[self.options[self.index]]}' + '     库存', False, 'Black')
+                self.buy_text = self.font.render('出售' + f'${PURCHASE_PRICES[self.options[self.index]]}', False, 'Black')
                 pos_rect = self.buy_text.get_rect(midleft=(self.main_rect.left + 150, background_rect.centery))
                 self.display_surface.blit(self.buy_text, pos_rect)
 
@@ -121,5 +119,3 @@ class ShopMenu:
             amount_list = list(self.player.item_inventory.values()) + list(self.player.seed_inventory.values())
             amount = amount_list[text_index]
             self.show_entry(text_surface, amount, top, self.index == text_index)
-
-            # self.display_surface.blit(text_surface, (100, text_index * 50))

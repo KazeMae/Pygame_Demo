@@ -12,7 +12,7 @@ from scene.support import import_folder
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer, toggle_shop):
+    def __init__(self, pos, group, collision_sprites, tree_sprites, interaction, soil_layer, toggle_shop, toggle_bag):
         super().__init__(group)
 
         # 导入动画
@@ -64,10 +64,10 @@ class Player(pygame.sprite.Sprite):
 
         # 库存
         self.item_inventory = {
-            'wood': 20,
-            'apple': 20,
-            'corn': 20,
-            'tomato': 20,
+            'wood': 0,
+            'apple': 0,
+            'corn': 0,
+            'tomato': 0,
         }
         self.seed_inventory = {
             'corn': 5,
@@ -80,6 +80,7 @@ class Player(pygame.sprite.Sprite):
         self.interaction = interaction
         self.sleep = False
         self.toggle_shop = toggle_shop
+        self.toggle_bag = toggle_bag
 
         # 泥土
         self.soil_layer = soil_layer
@@ -90,7 +91,12 @@ class Player(pygame.sprite.Sprite):
             'tool switch': Timer(200),
             'seed use': Timer(350, self.use_seed),
             'seed switch': Timer(200),
+            'bag': Timer(500),
         }
+
+        # 声音
+        self.watering_sound = pygame.mixer.Sound('../resource/audio/water.mp3')
+        self.watering_sound.set_volume(0.2)
 
     def use_tool(self):
         """
@@ -104,13 +110,11 @@ class Player(pygame.sprite.Sprite):
         if self.selected_tool == 'axe':
             for tree in self.tree_sprites.sprites():
                 if tree.rect.collidepoint(self.target_pos):
-                    # TODO: 此处有bug，砍倒树显示白色画面的时候会崩溃，在此处打个断点调试后可修复
                     tree.damage()
 
         if self.selected_tool == 'water':
             self.soil_layer.water(self.target_pos)
-        else:
-            pass
+            self.watering_sound.play()
 
     def use_seed(self):
         # 判断玩家是否有种子
@@ -229,14 +233,20 @@ class Player(pygame.sprite.Sprite):
                 self.selected_seed = self.seeds[self.seed_index]
             # 睡觉和商人
             if keys[pygame.K_RETURN]:
-                self.toggle_shop()
+                # 检测玩家是否与 interaction 精灵碰撞, 返回碰撞了哪些 Bad or Trader
                 collided_interaction_sprite = pygame.sprite.spritecollide(self, self.interaction, False)
+                # 列表不为空
                 if collided_interaction_sprite:
                     if collided_interaction_sprite[0].name == 'Trader':
                         self.toggle_shop()
-                    else:
+
+                    if collided_interaction_sprite[0].name == 'Bad':
                         self.status = 'left_idle'
                         self.sleep = True
+
+            if keys[pygame.K_TAB] and not self.timers['bag'].active:
+                self.timers['bag'].activate()
+                self.toggle_bag()
 
     def get_status(self):
         """

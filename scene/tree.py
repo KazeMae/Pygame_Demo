@@ -29,8 +29,6 @@ class Tree(Generic):
         # 被砍掉的树的图片
         stump_path = f'../resource/graphics/stumps/{"small" if name == "Small" else "large"}.png'
         self. stump_surface = pygame.image.load(stump_path).convert_alpha()
-        # 砍树所需时间(树健康值-1的时间）
-        self.invul_timer = Timer(200)
 
         # 苹果图片
         self.apple_surface = pygame.image.load('../resource/graphics/fruit/apple.png')
@@ -39,12 +37,20 @@ class Tree(Generic):
         # 苹果精灵
         self.apple_sprites = pygame.sprite.Group()
         self.create_fruit()
-
+        # 玩家物品增加
         self.player_add = player_add
+
+        # 砍树声音
+        self.axe_sound = pygame.mixer.Sound('../resource/audio/axe.mp3')
 
     def damage(self):
         # 砍树时候
         self.health -= 1
+        if self.health <= 0:
+            self.health = -5
+
+        # 播放声音
+        self.axe_sound.play()
 
         # 拿走苹果
         if len(self.apple_sprites.sprites()) > 0:
