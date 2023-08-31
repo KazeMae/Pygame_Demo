@@ -68,8 +68,23 @@ class ShopMenu:
 
         if keys[pygame.K_DOWN] and not self.timer.active:
             self.index = (self.index + 1) % 6
-
             self.timer.activate()
+
+        if keys[pygame.K_SPACE] and not self.timer.active:
+            self.timer.activate()
+            # 获取物品信息
+            current_item = self.options[self.index]
+            # 卖出
+            if self.index <= self.sell_border:
+                if self.player.item_inventory[current_item] > 0:
+                    self.player.item_inventory[current_item] -= 1
+                    self.player.money += SALE_PRICES[current_item]
+            # 购买
+            else:
+                if self.player.money >= PURCHASE_PRICES[current_item]:
+                    self.player.seed_inventory[current_item] += 1
+                    self.player.money -= PURCHASE_PRICES[current_item]
+
 
     def show_entry(self, text_surface, amount, top, selected):
         # 背景
@@ -87,6 +102,15 @@ class ShopMenu:
         # 选择
         if selected:
             pygame.draw.rect(self.display_surface, 'black', background_rect, 4, 4)
+            # 渲染出售和收购的字体
+            if self.index <= self.sell_border:
+                self.sell_text = self.font.render('收购' + f'${SALE_PRICES[self.options[self.index]]}' + '  库存', False, 'Black')
+                pos_rect = self.sell_text.get_rect(midleft=(self.main_rect.left + 150, background_rect.centery))
+                self.display_surface.blit(self.sell_text, pos_rect)
+            else:
+                self.buy_text = self.font.render('出售' + f'${PURCHASE_PRICES[self.options[self.index]]}' + '     库存', False, 'Black')
+                pos_rect = self.buy_text.get_rect(midleft=(self.main_rect.left + 150, background_rect.centery))
+                self.display_surface.blit(self.buy_text, pos_rect)
 
     def update(self):
         self.input()
@@ -96,7 +120,6 @@ class ShopMenu:
             top = self.main_rect.top + text_index * (text_surface.get_height() + (self.padding * 2) + self.space)
             amount_list = list(self.player.item_inventory.values()) + list(self.player.seed_inventory.values())
             amount = amount_list[text_index]
-            print(text_surface)
             self.show_entry(text_surface, amount, top, self.index == text_index)
 
             # self.display_surface.blit(text_surface, (100, text_index * 50))
