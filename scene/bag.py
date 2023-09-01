@@ -6,8 +6,7 @@
 # @Author:          KazeMae
 # @Email:           xiaochunfeng.x@foxmail.com
 import pygame
-from game.settings import *
-from actor.shopmenu import ShopMenu
+from scene.shopmenu import ShopMenu
 
 
 class Bag(ShopMenu):

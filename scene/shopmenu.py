@@ -58,7 +58,7 @@ class ShopMenu:
         keys = pygame.key.get_pressed()
         self.timer.update()
 
-        if keys[pygame.K_ESCAPE]:
+        if keys[pygame.K_e]:
             # 更新商店状态
             self.toggle_menu()
 

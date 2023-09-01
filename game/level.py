@@ -14,7 +14,7 @@ from game.transition import Transition
 from actor.player import Player
 from actor.overlay import Overlay
 from actor.camera_group import CameraGroup
-from actor.shopmenu import ShopMenu
+from scene.shopmenu import ShopMenu
 from scene.generic import Generic
 from scene.tree import Tree
 from scene.water import Water
@@ -26,6 +26,7 @@ from scene.rain import Rain
 from scene.particle import Particle
 from scene.sky import Sky
 from scene.bag import Bag
+from scene.welcome import Welcome
 
 
 class Level:
@@ -43,6 +44,9 @@ class Level:
         self.soil_layer = SoilLayer(self.all_sprites, self.collision_sprites)
 
         self.setup()
+
+        # 开始界面
+        self.welcome = Welcome(self.player)
 
         # 建立叠加层
         self.overlay = Overlay(self.player)
@@ -100,7 +104,7 @@ class Level:
             Tree(
                 pos=(objec.x, objec.y),
                 surface=objec.image,
-                groups=[self.all_sprites, self.collision_sprites, self.tree_sprites],
+                groups=[self.tree_sprites, self.collision_sprites, self.all_sprites],
                 name=objec.name,
                 player_add=self.player_add
             )
@@ -155,7 +159,7 @@ class Level:
         self.shop_active = not self.shop_active
 
     def toggle_bag(self):
-        # 标记商店开启或关闭
+        # 标记背包开启或关闭
         self.bag_active = not self.bag_active
 
     def reset(self):
@@ -183,7 +187,7 @@ class Level:
                 tree.create_fruit()
 
         # 时间
-        self.sky.start_color = [255, 255, 255]
+        self.sky.start_color = self.sky.light_color
         self.sky.light = True
 
     def plant_collision(self):
@@ -196,32 +200,42 @@ class Level:
                     self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
 
     def run(self, dt):
-        # 填充屏幕
-        self.display_surface.fill('blue')
-        # 以玩家为中心绘制精灵
-        self.all_sprites.custom_draw(self.player)
+        # 游戏未开始界面
+        if self.welcome.begin == 0:
+            self.welcome.display()
+            self.welcome.input()
 
-        # 根据是否打开商店来绘制精灵
-        if self.shop_active:
-            self.menu.update()
-        else:
-            # 更新精灵
-            self.all_sprites.update(dt)
-            # 收获植物
-            self.plant_collision()
+        elif self.welcome.begin == 1:
+            self.welcome.input()
+            # 填充屏幕
+            self.display_surface.fill('blue')
+            # 以玩家为中心绘制精灵
+            self.all_sprites.custom_draw(self.player)
 
-        # 绘制背包
-        if self.bag_active and not self.shop_active:
-            self.bag.update()
+            # 根据是否打开商店来绘制精灵
+            if self.shop_active:
+                self.menu.update()
+            else:
+                # 更新精灵
+                self.all_sprites.update(dt)
+                # 收获植物
+                self.plant_collision()
 
-        # 绘制叠加层
-        self.overlay.display()
-        # 下雨
-        if self.raining and not self.shop_active:
-            self.rain.updata()
-        # 时间流逝
-        self.sky.display(dt)
+            # 绘制背包
+            if self.bag_active and not self.shop_active:
+                self.bag.update()
 
-        # 判断是否睡觉
-        if self.player.sleep:
-            self.transition.play()
+            # 绘制叠加层
+            self.overlay.display()
+            # 下雨
+            if self.raining and not self.shop_active:
+                self.rain.updata()
+            # 时间流逝
+            self.sky.display(dt)
+
+            # 判断是否睡觉
+            if self.player.sleep:
+                self.transition.play()
+        elif self.welcome.begin == 2:
+            self.welcome.display()
+            self.welcome.input()

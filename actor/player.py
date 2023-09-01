@@ -231,6 +231,7 @@ class Player(pygame.sprite.Sprite):
                 # print(self.tool_index)
                 # 更新种子状态
                 self.selected_seed = self.seeds[self.seed_index]
+
             # 睡觉和商人
             if keys[pygame.K_RETURN]:
                 # 检测玩家是否与 interaction 精灵碰撞, 返回碰撞了哪些 Bad or Trader
@@ -240,7 +241,7 @@ class Player(pygame.sprite.Sprite):
                     if collided_interaction_sprite[0].name == 'Trader':
                         self.toggle_shop()
 
-                    if collided_interaction_sprite[0].name == 'Bad':
+                    else:
                         self.status = 'left_idle'
                         self.sleep = True
 
