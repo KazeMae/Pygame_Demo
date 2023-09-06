@@ -50,14 +50,15 @@ class Level:
 
         # 建立叠加层
         self.overlay = Overlay(self.player)
-        # 过渡
-        self.transition = Transition(self.reset, self.player)
 
         # 天空
         self.rain = Rain(self.all_sprites)
         self.raining = randint(0, 10) < 3  # 概率30%
         self.soil_layer.raining = self.raining
         self.sky = Sky()
+
+        # 过渡
+        self.transition = Transition(self.reset, self.player)
 
         # 商店
         self.menu = ShopMenu(self.player, self.toggle_shop)
@@ -80,13 +81,14 @@ class Level:
         tmx_data = load_pygame('../resource/data/map.tmx')
 
         # 房子地板, 和地毯, 注意绘制顺序
-        for layer in ['HouseFloor', 'HouseFurnitureBottom', ]:
+        for layer in ['HouseFloor', 'HouseFurnitureBottom']:
             for x, y, surface in tmx_data.get_layer_by_name(layer).tiles():
                 Generic((x * TILE_SIZE, y * TILE_SIZE), surface, self.all_sprites, LAYERS['house bottom'])
 
         # 房子墙, 桌椅等家具
         for x, y, surface in tmx_data.get_layer_by_name('HouseWalls').tiles():
             Generic((x * TILE_SIZE, y * TILE_SIZE), surface, self.all_sprites, LAYERS['main'])
+
         for x, y, surface in tmx_data.get_layer_by_name('HouseFurnitureTop').tiles():
             Generic((x * TILE_SIZE, y * TILE_SIZE), surface, self.all_sprites, LAYERS['main'])
 
@@ -104,7 +106,7 @@ class Level:
             Tree(
                 pos=(objec.x, objec.y),
                 surface=objec.image,
-                groups=[self.tree_sprites, self.collision_sprites, self.all_sprites],
+                groups=[self.collision_sprites, self.all_sprites, self.tree_sprites],
                 name=objec.name,
                 player_add=self.player_add
             )
@@ -181,14 +183,11 @@ class Level:
         # 遍历所有树
         for tree in self.tree_sprites.sprites():
             # 遍历树上的苹果
-            if len(tree.apple_sprites.sprites()) > 0:
+            if hasattr(tree, 'apple_sprites') and len(tree.apple_sprites.sprites()) >= 0:
                 for apple in tree.apple_sprites.sprites():
                     apple.kill()
-                tree.create_fruit()
-
-        # 时间
-        self.sky.start_color = self.sky.light_color
-        self.sky.light = True
+                if tree.alive:
+                    tree.create_fruit()
 
     def plant_collision(self):
         if self.soil_layer.plant_sprites:
@@ -216,7 +215,7 @@ class Level:
             if self.shop_active:
                 self.menu.update()
             else:
-                # 更新精灵
+                # 更新所有精灵
                 self.all_sprites.update(dt)
                 # 收获植物
                 self.plant_collision()
@@ -230,12 +229,13 @@ class Level:
             # 下雨
             if self.raining and not self.shop_active:
                 self.rain.updata()
-            # 时间流逝
-            self.sky.display(dt)
 
             # 判断是否睡觉
             if self.player.sleep:
+                self.sky.reset()
                 self.transition.play()
+            else:
+                self.sky.display(dt)
         elif self.welcome.begin == 2:
             self.welcome.display()
             self.welcome.input()

@@ -18,8 +18,12 @@ class Sky:
         self.night_color = [38, 101, 189]
         self.light = True
 
+    def reset(self):
+        self.start_color = self.light_color
+        self.light = True
+
     def display(self, dt):
-        if self.light:
+        if self.start_color[0] >= 39:
             for index, value in enumerate(self.night_color):
                 if self.start_color[index] > value:
                     self.start_color[index] -= 2 * dt
@@ -32,13 +36,13 @@ class Sky:
                 else:
                     self.start_color[index] = value
 
-        if self.light and self.start_color[0] <= 39:
-            self.light = False
-            self.start_color = self.night_color
-
-        if not self.light and self.start_color[0] >= 254:
-            self.light = True
-            self.start_color = self.light_color
+        # if self.light and self.start_color[0] <= 39:
+        #     self.light = False
+        #     self.start_color = self.night_color
+        #
+        # if not self.light and self.start_color[0] >= 254:
+        #     self.light = True
+        #     self.start_color = self.light_color
 
         self.full_surface.fill(self.start_color)
         self.display_surface.blit(self.full_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)

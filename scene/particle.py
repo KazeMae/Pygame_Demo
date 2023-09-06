@@ -22,7 +22,9 @@ class Particle(Generic):
         :param groups: 精灵组
         :param z: 精灵所在的图层
         """
+        # 调用父类的构造函数来进行初始化
         super().__init__(pos, surface, groups, z)
+
         # 获取开始时间
         self.start_time = pygame.time.get_ticks()
         self.duration = duration
@@ -41,6 +43,7 @@ class Particle(Generic):
         """
         # 获取当前时间
         current_time = pygame.time.get_ticks()
+        # print(current_time)
         # 如果存在时间超过设定值则就销毁
         if current_time - self.start_time > self.duration:
             self.kill()

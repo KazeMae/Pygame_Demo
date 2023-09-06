@@ -16,12 +16,20 @@ from scene.particle import Particle
 class Tree(Generic):
     """
     加载树的贴图
-    继承自Generic类
+    继承自pygame.sprite.Sprite类
     能够继承父类的属性和方法
     """
-
     def __init__(self, pos, surface, groups, name, player_add):
+        # 调用父类的构造函数来进行初始化
         super().__init__(pos, surface, groups)
+        # # 获取精灵的图像
+        # self.image = surface
+        # # 传入的位置信息创建精灵的矩形区域
+        # self.rect = self.image.get_rect(topleft=pos)
+        # # 精灵所在的图层
+        # self.z = LAYERS['main']
+        # # 碰撞箱, y轴缩小 75% 实现玩家可以站在物体后面的效果
+        # self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.2, -self.rect.height * 0.75)
 
         # 树的属性
         self.health = 5
@@ -44,17 +52,18 @@ class Tree(Generic):
         self.axe_sound = pygame.mixer.Sound('../resource/audio/axe.mp3')
 
     def damage(self):
-        # 砍树时候
-        self.health -= 1
-        if self.health <= 0:
-            self.health = -5
+        # 砍树时候, 没有苹果才破坏树木
+        if len(self.apple_sprites.sprites()) <= 0:
+            self.health -= 1
+            if self.health == 0:
+                self.check_death()
 
         # 播放声音
         self.axe_sound.play()
 
         # 拿走苹果
         if len(self.apple_sprites.sprites()) > 0:
-            # 去掉苹果精灵
+            # 选择去掉的苹果精灵
             random_apple = choice(self.apple_sprites.sprites())
             # 播放摘苹果动画
             Particle(
@@ -82,24 +91,22 @@ class Tree(Generic):
             )
             self.image = self.stump_surface
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
-            self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.1 )
+            self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.1)
             self.alive = False
             self.player_add('wood')
-
-    def update(self, dt):
-        if self.alive:
-            self.check_death()
 
     def create_fruit(self):
         for pos in self.apple_pos:
             # 随机生成苹果
-            if randint(0, 10) < 2:
+            rand = randint(0, 10)
+            # print('apple create:', rand < 2)
+            if rand < 2:
                 # 将苹果从相对树的坐标转换到相对整个地图的坐标
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
                 Generic(
                     pos=(x, y),
                     surface=self.apple_surface,
-                    groups=[self.apple_sprites, self.groups()[0]],
+                    groups=[self.apple_sprites, self.groups()],
                     z=LAYERS['fruit']
                 )

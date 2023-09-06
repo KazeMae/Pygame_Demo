@@ -109,7 +109,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.selected_tool == 'axe':
             for tree in self.tree_sprites.sprites():
-                if tree.rect.collidepoint(self.target_pos):
+                if hasattr(tree, 'damage') and tree.rect.collidepoint(self.target_pos):
                     tree.damage()
 
         if self.selected_tool == 'water':
