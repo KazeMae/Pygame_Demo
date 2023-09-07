@@ -45,6 +45,6 @@ class Rain:
             z=LAYERS['rain drops']
         )
 
-    def updata(self):
+    def update(self):
         self.create_floor()
         self.create_drops()

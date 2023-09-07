@@ -65,11 +65,11 @@ class Tree(Generic):
         if len(self.apple_sprites.sprites()) > 0:
             # 选择去掉的苹果精灵
             random_apple = choice(self.apple_sprites.sprites())
-            # 播放摘苹果动画
+            # 摘苹果的白色闪烁
             Particle(
                 pos=random_apple.rect.topleft,
                 surface=random_apple.image,
-                groups=self.groups()[0],
+                groups=self.groups(),
                 z=LAYERS['fruit']
             )
             self.player_add('apple')
@@ -85,13 +85,13 @@ class Tree(Generic):
             Particle(
                 pos=self.rect.topleft,
                 surface=self.image,
-                groups=self.groups()[0],
+                groups=self.groups(),
                 z=LAYERS['fruit'],
                 duration=300
             )
             self.image = self.stump_surface
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
-            self.hitbox = self.rect.copy().inflate(-10, self.rect.height * 0.1)
+            self.hitbox = self.rect.copy().inflate(-10, -self.rect.height * 0.8)
             self.alive = False
             self.player_add('wood')
 

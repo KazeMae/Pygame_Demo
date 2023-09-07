@@ -28,12 +28,13 @@ class Transition:
         # 不断变暗
         self.color += self.speed
         if self.color == 0:
-            self.speed *= -1
+            self.speed = 1
             self.reset()
         if self.color > 255:
             self.color = 255
             self.player.sleep = False
             self.speed = -1
+
         # 填充整个图像
         self.image.fill((self.color, self.color, self.color))
         # 图像放置位置

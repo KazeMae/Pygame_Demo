@@ -55,9 +55,9 @@ class Level:
         self.rain = Rain(self.all_sprites)
         self.raining = randint(0, 10) < 3  # 概率30%
         self.soil_layer.raining = self.raining
-        self.sky = Sky()
+        self.sky = Sky(self.reset)
 
-        # 过渡
+        # 睡觉动画
         self.transition = Transition(self.reset, self.player)
 
         # 商店
@@ -189,6 +189,11 @@ class Level:
                 if tree.alive:
                     tree.create_fruit()
 
+        # 天色
+        self.sky.start_color = [255, 255, 255]
+        print(self.sky.start_color)
+        self.sky.light = True
+
     def plant_collision(self):
         if self.soil_layer.plant_sprites:
             for plant in self.soil_layer.plant_sprites.sprites():
@@ -228,14 +233,15 @@ class Level:
             self.overlay.display()
             # 下雨
             if self.raining and not self.shop_active:
-                self.rain.updata()
+                self.rain.update()
+
+            self.sky.display(dt)
 
             # 判断是否睡觉
             if self.player.sleep:
-                self.sky.reset()
                 self.transition.play()
-            else:
-                self.sky.display(dt)
+                # self.sky.reset()
+
         elif self.welcome.begin == 2:
             self.welcome.display()
             self.welcome.input()
