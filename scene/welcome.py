@@ -13,10 +13,9 @@ from game.settings import *
 
 
 class Welcome:
-    def __init__(self, player):
+    def __init__(self):
         # 设置
         self.display_surface = pygame.display.get_surface()
-        self.player = player
         self.back_surface = pygame.image.load('../resource/graphics/welcome/welcome.png').convert()
         # 颜色
         self.color = 255

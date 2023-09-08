@@ -10,9 +10,9 @@ import pygame
 from random import randint
 from pytmx.util_pygame import load_pygame
 from game.settings import *
-from game.transition import Transition
+from scene.transition import Transition
 from actor.player import Player
-from actor.overlay import Overlay
+from scene.overlay import Overlay
 from actor.camera_group import CameraGroup
 from scene.shopmenu import ShopMenu
 from scene.generic import Generic
@@ -46,7 +46,7 @@ class Level:
         self.setup()
 
         # 开始界面
-        self.welcome = Welcome(self.player)
+        self.welcome = Welcome()
 
         # 建立叠加层
         self.overlay = Overlay(self.player)

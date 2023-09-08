@@ -11,6 +11,9 @@ from scene.generic import Generic
 
 
 class RainDrop(Generic):
+    """
+    雨丝落下
+    """
     def __init__(self, surface, pos, moving, groups, z):
         super().__init__(pos, surface, groups, z)
         # 设置

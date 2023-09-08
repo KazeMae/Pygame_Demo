@@ -11,10 +11,9 @@ from game.settings import *
 
 class Generic(pygame.sprite.Sprite):
     """
-    加载地板, 房子, 栅栏的贴图
+    通用精灵类
     继承pygame.sprite.Sprite类
     """
-
     def __init__(self, pos, surface, groups, z=LAYERS['main']):
         """
         初始化

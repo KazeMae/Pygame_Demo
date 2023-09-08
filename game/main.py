@@ -14,6 +14,9 @@ from game.level import Level
 
 
 class Game:
+    """
+    游戏主程序
+    """
     def __init__(self):
         """
         初始化游戏
@@ -26,12 +29,12 @@ class Game:
         pygame.display.set_caption('星露谷物语 嘀嘀嘀嘀嘀嘀配')
         # 获取时钟
         self.clock = pygame.time.Clock()
-        # 创建关卡
+        # 创建游戏运行类
         self.level = Level()
 
     def run(self):
         """
-        游戏主程序
+        游戏运行
         :return:
         """
         while True:
@@ -41,7 +44,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-            # 时间增量
+            # 帧时间增量
             dt = self.clock.tick() / 1000
             self.level.run(dt)
             # 更新播放器

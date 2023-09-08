@@ -117,6 +117,10 @@ class Player(pygame.sprite.Sprite):
             self.watering_sound.play()
 
     def use_seed(self):
+        """
+        使用种子时
+        :return:
+        """
         # 判断玩家是否有种子
         if self.seed_inventory[self.selected_seed] > 0:
             self.soil_layer.plant_seed(self.target_pos, self.selected_seed)
@@ -269,13 +273,16 @@ class Player(pygame.sprite.Sprite):
 
     def collision(self, direction):
         """
-
-        :param direction:
+        实现碰撞无法移动效果
+        :param direction: 水平和竖直
         :return:
         """
         for sprite in self.collision_sprites.sprites():
+            # 判断 sprite 所属的类是否有 hitbox 属性
             if hasattr(sprite, 'hitbox'):
                 if sprite.hitbox.colliderect(self.hitbox):
+
+                    # 水平方向
                     if direction == 'horizontal':
                         if self.direction.x > 0:  # 向右移动
                             self.hitbox.right = sprite.hitbox.left
@@ -284,6 +291,7 @@ class Player(pygame.sprite.Sprite):
                         self.rect.centerx = self.hitbox.centerx
                         self.pos.x = self.hitbox.centerx
 
+                    # 竖直方向
                     if direction == 'vertical':
                         if self.direction.y > 0:  # 向下移动
                             self.hitbox.bottom = sprite.hitbox.top
@@ -318,7 +326,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, dt):
         """
-        更新播放器
+        更新玩家
         :param dt:
         :return:
         """

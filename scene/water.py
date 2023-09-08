@@ -15,7 +15,6 @@ class Water(Generic):
     继承自Generic类
     能够继承父类的属性和方法
     """
-
     def __init__(self, pos, frames, groups):
         # 动画设置
         self.frames = frames

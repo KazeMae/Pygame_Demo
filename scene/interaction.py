@@ -12,9 +12,8 @@ from game.settings import *
 
 class Interaction(pygame.sprite.Sprite):
     """
-    白色闪烁
+    交互对象
     """
-
     def __init__(self, pos, size, groups, name):
         surface = pygame.Surface(size)
         # 调用父类的构造函数来进行初始化

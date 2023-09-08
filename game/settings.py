@@ -13,7 +13,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 TILE_SIZE = 64
 
-# 工具, 种子小图标位置
+# 工具, 种子, 疾跑小图标位置
 OVERLAY_POSITIONS = {
     'tool': (40, SCREEN_HEIGHT - 15),
     'seed': (70, SCREEN_HEIGHT - 5),

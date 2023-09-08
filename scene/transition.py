@@ -6,10 +6,13 @@
 # @Author:          KazeMae
 # @Email:           xiaochunfeng.x@foxmail.com
 import pygame
-from settings import *
+from game.settings import *
 
 
 class Transition:
+    """
+    睡觉过度动画
+    """
     def __init__(self, reset, player):
 
         # 设置
